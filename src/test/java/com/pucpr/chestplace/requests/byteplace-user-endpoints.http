@@ -1,0 +1,27 @@
+### REGISTER
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "name": "Carlos Krefer",
+  "email": "gui@ex.com",
+  "password": "12345",
+  "role": "COMPRADOR"
+}
+
+
+### BUSCA DE USUÁRIOS
+GET  /users
+Host: localhost:8080
+
+
+### Alterar dados do usuário
+PUT http://localhost:8080/users/3
+Content-Type: application/json
+
+{
+  "name": "Gustavo Aymoto"
+}
+
+### DELETAR USUÁRIO
+DELETE http://localhost:8080/users/510

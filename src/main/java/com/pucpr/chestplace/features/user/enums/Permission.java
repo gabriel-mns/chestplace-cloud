@@ -1,0 +1,18 @@
+package com.pucpr.chestplace.features.user.enums;
+
+public enum Permission {
+    
+    CADASTRAR_PRODUTO,
+    EDITAR_PRODUTO,
+    EXCLUIR_PRODUTO,
+    VISUALIZAR_PRODUTO,
+    CADASTRAR_USUARIO,
+    EDITAR_USUARIO,
+    EXCLUIR_USUARIO,
+    VISUALIZAR_USUARIO,
+    REALIZAR_COMPRA,
+    VISUALIZAR_COMPRAS,
+    VISUALIZAR_VENDAS,
+    ATUALIZAR_VENDA,
+
+}
