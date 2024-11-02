@@ -22,6 +22,8 @@ public class UserService {
 
     private UserRepository userRepository;
 
+    private ServiceBusSenderService serviceBusSenderService;
+
     // CREATE
     public boolean register(@Valid UserRegisterRequestDTO request) {
 
@@ -36,7 +38,9 @@ public class UserService {
             request.getRole()
         );
 
-        userRepository.save(user);
+        Long userId = userRepository.save(user).getId();
+
+        serviceBusSenderService.sendMessage(Long.toString(userId));
         
         return true;
 
