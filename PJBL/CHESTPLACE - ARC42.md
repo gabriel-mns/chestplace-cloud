@@ -14,7 +14,7 @@ O Projeto Chestplace é um software que:
 
 
 ## 1.1. Contextualização
-Tendo em vista que, de maneira geral, no mercado de camisetas, há uma grande segmentação (entre o mercado de camisetas novas e usadas, entre vendedores de pequeno ou grande porte, entre diferentes marcas), este software irá permitir a sua centralização, ou seja, tornará possível a venda de camisetas novas e usadas em um único espaço, tanto por vendedores individuais como por empresas. Além disso, foi percebido que é prática comum exigir o cadastro para a realização de compras. Esse requerimento pode, em alguns casos, encarecer a experiência do usuário, devido ao tempo gasto para o preenchimento dos formulários. Dessa maneira, o nosso produto de software tornará opcional o cadastro para a realização da compra. 
+Tendo em vista que, de maneira geral, no mercado de camisetas, há uma grande segmentação (entre o mercado de camisetas novas e usadas, entre vendedores de pequeno ou grande porte, entre diferentes marcas), este software irá permitir a sua centralização, ou seja, tornará possível a venda de camisetas novas e usadas em um único espaço, tanto por vendedores individuais como por empresas.
 
 ## 1.2. Overview dos Requisitos
 O sistema deverá permitir a compra e venda de camisetas novas e usadas, além do gerenciamento de vendas e compras. Será possível que os usuários gerenciem seus próprios perfis, cadastrem novos usuários e autentiquem os já cadastrados. O sistema também deverá oferecer opções de pagamento por cartão de crédito, débito e Pix.
