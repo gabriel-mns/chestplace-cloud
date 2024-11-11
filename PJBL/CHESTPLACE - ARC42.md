@@ -107,7 +107,7 @@ A lista a seguir contém os stakeholders do sistema.
             System(apiMarketplace, "API Marketplace", "[Java]<br>Microserviço para as<br>principais funcionalidades do marketplace.")
             System(apiCarrinho, "API Carrinho", "[Javascript]<br>Azure Function para o<br>carrinho de compras.")
             SystemDb(bancoMongo, "Banco de dados<br>não relacional", "[MongoDB]<br>Armazena<br>dados de carrinhos.")
-            SystemDb(bancoSQL, "Banco de dados<br>relacional", "[PostgreSQL]<br>Armazena<br>dados do marketplace.")
+            SystemDb(bancoSQL, "Banco de dados<br>relacional", "[SQLServer]<br>Armazena<br>dados do marketplace.")
         }
 
         System_Ext(apiCEP, "ViaCEP", "[Sistema de software]<br>API do sistema que retorna informações sobre o CEP fornecido.")
@@ -161,7 +161,7 @@ Segue o padrão "database per service", distribuído da seguinte forma:
 
 - Carrinho de compras: Banco de dados não relacional com MongoDB.
 - Autenticação: Banco relacional com Firebase. 
-- Demais funções do sistema: Banco relacional em PostgresSQL.
+- Demais funções do sistema: Banco relacional em SQLServer.
 
 A comunicação entre APIs segue a arquitetura REST, padronizando o uso dos verbos HTTP e formato de dados JSON.
 
@@ -173,7 +173,7 @@ A comunicação entre APIs segue a arquitetura REST, padronizando o uso dos verb
         title Diagrama de componentes (Nível III) - API Marketplace
 
         Container(apiGateway, "API Gateway", "Amazon API Gateway", "Roteamento para serviços.")
-        Container(bd, "Banco de dados relacional", "PostgreSQL", "Armazena dados do marketplace.")
+        Container(bd, "Banco de dados relacional", "SQLServer", "Armazena dados do marketplace.")
         
         Container_Boundary(apiMarketplace, "API Marketplace") {
             Component(user, "User", "Java", "Trata de funcionalidades relacionadas a usuários.")
@@ -208,7 +208,7 @@ A comunicação entre APIs segue a arquitetura REST, padronizando o uso dos verb
         UpdateRelStyle(image, common, $offsetY="-10", $offsetX="-20")
         UpdateRelStyle(product, common, $offsetY="0", $offsetX="-20")
 
-**Diagrama Entidade Relacionamento do PostgreSQL**
+**Diagrama Entidade Relacionamento do SQLServer**
 ```
 erDiagram
     tb_sale }o--|| tb_user : relacao
@@ -268,7 +268,7 @@ erDiagram
     }
 ```
 
-**Dicionário de variáveis do PostgreSQL**
+**Dicionário de variáveis do SQLServer**
 
 | Tabela | Variável | Descrição                 | Tipo    | Pode ser nula? |
 | :----: | :------: | :-----------------------: | :-----: | :------------: |
@@ -282,7 +282,6 @@ erDiagram
 | tb_user | name | Nome do usuário | string | Não |
 | tb_user | senha | Senha do usuário | string | Não |
 | tb_user | email | E-mail do usuário | string | Não |
-| tb_user | created_at | Data de cadastro do usuário | datetime | Não |
 | tb_user_tb_address | comprador_id | Identificador do usuário comprador | string | Não |
 | tb_user_tb_address | endereco_id | Identificador do endereço do usuário comprador | string | Não |
 | tb_user_tb_address | tipo_endereco | Informa tipo de endereço do comprador (entrega ou cobrança) | string | Não |
@@ -357,6 +356,30 @@ erDiagram
 | https://chestplace-carrinho.azurewebsites.net/api/carrinhos/{compradorId} | Array de produtos. A estrutura do array de produtos pode ser conferido na propriedade"produtos" mencionado na "Estrutura do Documento no MongoDB" | PUT | Atualiza o carrinho, substituindo os produtos existentes para os produtos informados no Body da requisição, para o compradorId informado.
 | https://chestplace-carrinho.azurewebsites.net/api/carrinhos | Carrinho. A estrutura do carrinho pode ser conferida na "Estrutura do Documento no MongoDB" | POST | Insere o carrinho com os produtos informados no Body da requisição, para o compradorId informado.
 
+**Rotas da API de Usuário**
+| URL   | Body (JSON) | Método | Descrição |
+| :---: | :---------: | :----: | :-------: |
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/{id} | Nenhum | GET | Buscar os dados do usuário com o ID especificado.
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users | Nenhum | GET | Buscar os dados de todos os usuários.
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/{id} | Nenhum | DELETE | Remove o usuário a partir do ID.
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/{id} | Objeto com os dados do usuário atualizados. | PUT |Atualiza o usuário com o id Especificado
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/register | Objeto com dados do usuário (nome, email, senha e tipo de usuário) | POST | Cadastra um novo usuário no banco de dados.
+
+**Rotas da API Gateway**
+| URL   | Body (JSON) | Método | Descrição |
+| :---: | :---------: | :----: | :-------: |
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/{id} | Nenhum | GET | Buscar os dados do usuário com o ID especificado.
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users | Nenhum | GET | Buscar os dados de todos os usuários.
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/{id} | Nenhum | DELETE | Remove o usuário a partir do ID.
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/{id} | Objeto com os dados do usuário atualizados. | PUT |Atualiza o usuário com o id Especificado
+| https://chestplace-user-service.victoriousrock-5abecb91.australiaeast.azurecontainerapps.io/users/register | Objeto com dados do usuário (nome, email, senha e tipo de usuário) | POST | Cadastra um novo usuário no banco de dados.
+| https://chestplace-carrinho.azurewebsites.net/api/carrinhos/{compradorId} | Nenhum | GET | Busca o carrinho a partir do identificador do comprador.
+| https://chestplace-carrinho.azurewebsites.net/api/carrinhos/{compradorId} | Nenhum | DELETE | Remove o carrinho a partir do identificador do comprador.
+| https://chestplace-carrinho.azurewebsites.net/api/carrinhos/{compradorId} | Array de produtos. A estrutura do array de produtos pode ser conferido na propriedade"produtos" mencionado na "Estrutura do Documento no MongoDB" | PUT | Atualiza o carrinho, substituindo os produtos existentes para os produtos informados no Body da requisição, para o compradorId informado.
+| https://chestplace-carrinho.azurewebsites.net/api/carrinhos | Carrinho. A estrutura do carrinho pode ser conferida na "Estrutura do Documento no MongoDB" | POST | Insere o carrinho com os produtos informados no Body da requisição, para o compradorId informado.
+| https://chestplace-bff.livelywave-bcf1a711.brazilsouth.azurecontainerapps.io/api/aggregate/usuario-carrinho/{usuarioID}| Nenhum | GET | Retorna os dados do usuário agregado com o carrinho.
+
+
 # 6. Visão de execução
 ---
 
@@ -421,7 +444,7 @@ O usuário Comprador realiza a ação da navegação até a compra
 | Node/Artifact                  | Descrição                                                                                 |
 |-----------------------|-------------------------------------------------------------------------------------------|
 | **Servidor de Aplicação** | Contêiner Docker em  Microsoft Azure que processa requisições e fornece APIs REST. |
-| **Servidor de Banco de Dados** | Contêiner Docker em Microsoft Azure que executa um banco de dados relacional (e.g., PostgreSQL ou MySQL). Armazena dados persistentes. |
+| **Servidor de Banco de Dados** | Servidor SQLServer no Microsoft Azure. |
 
 ### Pré-requisitos
 
@@ -478,7 +501,15 @@ A arquitetura deve seguir boas práticas de verbos http status, ao menos deve co
 Chestplace não entrou em produção e está em desenvolvimento, porém é identificado riscos.
 Há possibilidade de perda de conexão com hspodagem azure, ou ainda falha na integração contínua para deploy automático. O risco é mitigado através de backups regulares do arquivo de banco de dados relacional e utilizar multicloud nos microserviços. 
 
-# 12. Glosário 
+# 12. Dívidas Técnicas
+  1. Falta de Testes Unitários nos Serviços e no BFF
+  2. Falta de testes de escalabilidade
+  3. Hardcoding de URLs no BFF
+  4. Falta de Integração Contínua/Entrega Contínua (CI/CD)
+  5. Desconsideração de Segurança
+
+
+# 13. Glosário 
 | Termo | Definição |
 | :----: | :------: |
 | Chesplace | Nome do projeto |
