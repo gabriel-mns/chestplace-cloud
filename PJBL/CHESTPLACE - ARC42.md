@@ -358,10 +358,80 @@ erDiagram
 | https://chestplace-carrinho.azurewebsites.net/api/carrinhos | Carrinho. A estrutura do carrinho pode ser conferida na "Estrutura do Documento no MongoDB" | POST | Insere o carrinho com os produtos informados no Body da requisição, para o compradorId informado.
 
 # 6. Visão de execução
-_A entregar no TDE 3, envolve detalhes a nível de código._
+---
+
+#### 6.1 Visão Geral dos Componentes em Tempo de Execução
+
+O sistema é estruturado com os seguintes componentes principais durante a execução:
+| Componente| Descrição |
+| :----: | :------: |
+| Frontend | Responsável por renderizar as interfaces de usuário, lidar com interações dos usuários e se comunicar com os serviços de backend por meio de APIs REST.  |
+| Backend |  Funciona como a camada de lógica central do sistema, implementado com Spring Boot , processando requisições, autenticação de usuários, processamento de pedidos e interação e conexão com microserviços|
+| Banco de dados | Armazena todos os dados relevantes, incluindo listagens de produtos, informações de usuários, transações e dados de sessão em SQL Server em Microsoft Azure. |
+
+
+
+#### 6.2 Principais Cenários de Execução
+
+**Visão do usuário  na compra**
+O usuário Comprador realiza a ação da navegação até a compra
+   - O usuário acessa o site através de um navegador, iniciando a comunicação com o frontend.
+   - O frontend busca as listagens de produtos do serviço de backend usando uma chamada à API REST.
+   - O usuário seleciona um produto e inicia a compra.
+   - O frontend comunica a intenção de compra ao serviço de backend.
+  - O backend, valida a sessão do usuário, processa o pedido e atualiza o inventário de maneira segura e escalável.
+   - Um serviço de pagamento é invocado para lidar com a transação (crédito, débito ou Pix).
+   - Após a conclusão bem-sucedida, os detalhes da transação são armazenados no banco de dados, e a confirmação é enviada ao usuário.
+
+**Visão dos vendedores no gerenciamento de produtos**
+   - Os vendedores podem listar novos produtos através de uma interface dedicada.
+   - O frontend coleta e envia os dados do produto para o backend.
+   - O backend valida e armazena os dados do produto no banco de dados, utilizando recursos do Spring Boot.
+   - Atualizações nas listagens de produtos, como mudanças de preço ou disponibilidade, são tratadas de forma semelhante, através de um ciclo de interação validado entre o frontend e o backend.
+
+**Visão do usuário na autenticação**
+   - Um novo usuário pode optar por se registrar.
+   - Após o envio, o frontend envia uma solicitação ao backend, que cria um novo registro de usuário após validação.
+   - Usuários já existentes podem se autenticar com seus dados; estas são validadas contra os registros armazenados no banco de dados, e passados para uma sessão é criada em caso de sucesso.
+
+
+
+#### 6.3 Comunicação e Fluxo de Dados
+- **Comunicação Frontend-Backend**: API REST sobre HTTPS, garantindo a transferência segura de dados.
+- **Comunicação Backend-Banco de Dados**: Utiliza uma conexão segura para acessar e gerenciar os dados, seguindo padrões de integridade transacional e consistência de dados.
+
+#### 6.4 Tratamento de Falhas
+- **Erros de Rede**: O sistema realiza novas tentativas de requisições falhas com uma política de retrocesso limitada.
+- **Erros de Transação**: As transações são tratadas utilizando procedimentos de rollback para manter a consistência dos dados.
+
+---
+
 
 # 7. Conceitos de implementação
-_A entregar no TDE 3, envolve detalhes a nível de código._
+---
+
+
+#### Tecnológias e Framework usados
+- **Framework:** Spring Boot
+- **Linguagem:** JavaScript
+- **Ferramenta de Build:** Maven
+- **Containerização:** Suporte ao Docker presente .
+- **Nuvem para banco de dados:**  Microsoft Azure
+
+| Node/Artifact                  | Descrição                                                                                 |
+|-----------------------|-------------------------------------------------------------------------------------------|
+| **Servidor de Aplicação** | Contêiner Docker em  Microsoft Azure que processa requisições e fornece APIs REST. |
+| **Servidor de Banco de Dados** | Contêiner Docker em Microsoft Azure que executa um banco de dados relacional (e.g., PostgreSQL ou MySQL). Armazena dados persistentes. |
+
+### Pré-requisitos
+
+  - Docker instalado e configurado.
+  - Imagem da aplicação gerada com Maven.
+  - Variáveis de ambiente para configuração.
+  - Imagem do banco de dados.
+  - Configuração inicial do banco.
+
+---
 
 # 9. Decisão de design
 ### 9.1. Problema
@@ -392,6 +462,13 @@ O problema apresentado é a fragmentação do mercado de camisetas, com a venda 
         H --> I((Intuitive charts))
     end
 ## Cenários de avaliação
+
+| Nº | Cenário   | Atributo de Qualidade | Decisão Arquitetural | Tradeoffs | Resultados |
+| :---: | :---------: | :----: | :-------: | :-------: |:-------: |
+| 1 | Alta demanda durante temporada de promoções | Disponibilidade, Escalabilidade, Confidencialidade e Engajamento de Usuário | Utilização de API Gateway e arquitetura de microsserviços ou arquitetura monolítica | API Gateway ajuda na implementação de políticas de segurança e no balancemanto de carga, no entanto gera um ponto único de falha no sistema, aumenta a latência do sistema, torna a manutenção mais complexa e aumenta o custo do sistema. <br><br> Os microsserviços melhoram a escalibilidade e resiliência do sistema, porém pode sobrecarregar a rede. <br><br> A arquitetura monolítica pode reduzir a latência em caso de poucos acessos mas é pouco escalável. | Melhora a experiência do usuário com a utilização de um API Gateway pois facilita o gerenciamento de tráfego e o balanceamento de carga, garantindo alta disponibilidade mesmo em cenários de alta demanda. A arquitetura de microsserviços é altamente escalável, pois permite que cada serviço seja escalado independentemente, atendendo de forma eficiente à alta demanda durante promoções, enquanto a arquitetura monolítica pode enfrentar dificuldades com picos de demanda, exigindo reestruturação.
+| 2 | Indisponibilidade de Serviços Externos.| Disponibilidade e Engajamento de Usuário | Utilização de um arquitetura de microserviços com circuit breaker para gerenciar as falhas em serviços externos, como APIs de pagamento, em contra partida aumenta a complexidade do sistema e demanda mais testes e monitoramento.  | Com essas implementações, o sistema melhora a resiliência ao lidar com falhas de serviços externos. Em caso de queda de uma API de pagamento, por exemplo, o sistema pode ativar métodos de pagamento alternativos, mantendo o serviço disponível para o usuário e reduzindo o impacto na experiência de compra. | O sistema continua funcional e evita quedas totais durante a indisponibilidade de serviços externos, pois os circuit breakers evitam que a falha se espalhe, para manter o engajamento o  cliente é informado de forma transparente sobre eventuais atrasos ou problemas, aumentando a confiança e incentivando a permanência e o retorno ao site. 
+| 3 | Recuperação Após Desastre Total: Simular a perda completa de um data center e testar a recuperação a partir de backups em um local diferente. |Disponibilidade e Engajamento do Usuário | Utilização de serviços de backups  automático da Azure | Backups automáticos costumam custar caro, e também se a parte em específica do sistema for crítica e precisar de recuperação imediata pode ser necessário contratar o serviço de recuperação por zona de redundância que aumenta ainda mais o custo  | Os usuários percebem uma recuperação rápida, minimizando a frustração e o impacto negativo na experiência, o que reduz o risco de abandono e de insatisfação. A arquitetura de recuperação em zona geograficamente redundante permite que o sistema restabeleça rapidamente a operação após um desastre total
+
 ### Intereperabilidade/REST Endpoints
 
 A arquitetura deve ser concebida para garantir que a aplicação possa interagir e operar de forma eficiente com sistemas e serviços externos, independentemente das tecnologias ou plataformas utilizadas. 
@@ -402,5 +479,14 @@ Chestplace não entrou em produção e está em desenvolvimento, porém é ident
 Há possibilidade de perda de conexão com hspodagem azure, ou ainda falha na integração contínua para deploy automático. O risco é mitigado através de backups regulares do arquivo de banco de dados relacional e utilizar multicloud nos microserviços. 
 
 # 12. Glosário 
-_Em branco._
-
+| Termo | Definição |
+| :----: | :------: |
+| Chesplace | Nome do projeto |
+| ViaCEP | Aplicação externa utilizada para consultar CEP |
+| Produto | Refere-re a qualquer camiseta que esteja sendo vendinda |
+| Usuário | Todo comprador e vendedor |
+| API | Framework para aplicações web |
+| SpringBoot | Gerenciador de dependências e build |
+| Maven | Interface de comunicação entre sistemas. |
+| tb | Tabela |
+| Framework | Estrutura para desenvolvimento de software |
